@@ -1,0 +1,81 @@
+name: Commit to GeneXus repository
+
+on:
+    workflow_call:
+        inputs:
+            VERSION:
+                #description: 'The version to update to'
+                type: string
+                required: true
+            COMMIT_MESSAGE:
+                #description: 'The commit message for the update'
+                type: string
+                required: false
+            COMMITTER:
+                #description: 'The committer name (defaults to the GitHub actor if not provided)'
+                type: string
+                required: false
+            PACKAGE_NAMES:
+                #description: 'Comma-separated list of package names to update'
+                type: string
+                required: false
+
+jobs:
+    dispatch-repository-call:
+        name: Call workflow
+
+        runs-on: ubuntu-latest
+
+        env:
+            ORGANIZATION: ${{ vars.GENEXUS_DEPENDENCY_SYNC_ORG }}
+            REPOSITORY: ${{ vars.GENEXUS_DEPENDENCY_SYNC_REPO_NAME }}
+            REPOSITORY_BRANCH: 'master'
+            WORKFLOW: 'commit-to-git-manual.yml'
+
+            COMPONENT: ${{ github.repository }}
+            BRANCH: ${{ github.ref_name }}
+            VERSION: ${{ inputs.VERSION }}
+            COMMITTER: ${{ inputs.COMMITTER || github.actor }}
+            COMMIT_MESSAGE: ${{ inputs.COMMIT_MESSAGE }}
+            PACKAGE_NAMES: ${{ inputs.PACKAGE_NAMES }}
+
+        steps:
+            - name: Create GitHub App Token
+              id: app-token
+              uses: actions/create-github-app-token@v1
+              with:
+                app-id: ${{ vars.GENEXUS_SUITE_LINK_APP_ID }}
+                private-key: ${{ secrets.GENEXUS_SUITE_LINK_PRIVATE_KEY }}
+                owner: ${{ env.ORGANIZATION }}
+                repositories: ${{ env.REPOSITORY }}
+
+            - uses: actions/checkout@v4
+              name: Checkout current repository
+              with:
+                ref: ${{ github.ref }}
+                fetch-depth: 1
+                token: ${{ github.token}} # Must not use steps.app-token.outputs.token here because it is not allowed to access the current repository
+  
+            - name: Get last commit message
+              if: env.COMMIT_MESSAGE == ''
+              run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+
+            - name: Trigger the workflow_dispatch event
+              uses: actions/github-script@v7
+              with:
+                github-token: ${{ steps.app-token.outputs.token }}
+                script: |
+                    github.rest.actions.createWorkflowDispatch({
+                        owner: '${{ env.ORGANIZATION }}',
+                        repo: '${{ env.REPOSITORY }}',
+                        workflow_id: '${{ env.WORKFLOW }}',
+                        ref: '${{ env.REPOSITORY_BRANCH }}',
+                        inputs: {
+                            COMPONENT_NAME: '${{ env.COMPONENT }}',
+                            BRANCH: '${{ env.BRANCH }}',
+                            VERSION: '${{ env.VERSION }}',
+                            COMMITTER: '${{ env.COMMITTER }}',
+                            COMMIT_MESSAGE: '${{ env.COMMIT_MESSAGE }}',
+                            PACKAGE_NAMES: '${{ env.PACKAGE_NAMES }}',
+                        }
+                    })
