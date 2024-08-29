@@ -58,16 +58,16 @@ jobs:
       id: app-token
       uses: actions/create-github-app-token@v1
       with:
-        app-id: ${{ vars.GENEXUS_REUSABLE_WORKFLOW_APP_ID }}
-        private-key: ${{ secrets.GENEXUS_REUSABLE_WORKFLOW_PRIVATE_KEY }}
-        owner: ${{ env.ORGANIZATION }}
-        repositories: ${{ env.REPOSITORY }}
+        app-id: ${{ secrets.BETA_BOT_RELEASE_DOWNLOAD_APP_ID }}
+        private-key: ${{ secrets.BETA_BOT_RELEASE_DOWNLOAD_APP_PRIVATE_KEY }}
+        owner: ${{ secrets.BETA_BOT_RELEASE_REPO_OWNER }}
+        repositories: ${{ secrets.BETA_BOT_RELEASE_REPO_NAME }}
 
     - name: Download Bot
       env:
         PAT: ${{ steps.app-token.outputs.token }}
       run: |
-        curl -H "Authorization: Bearer $PAT" -H "Accept: application/octet-stream" -L -o ./auto-prs-merger.zip ${{ vars.BETA_BOT_DOWNLOAD_URL }}
+        curl -H "Authorization: Bearer $PAT" -H "Accept: application/octet-stream" -L -o ./auto-prs-merger.zip ${{ secrets.BETA_BOT_RELEASE_URL }}
     
     - name: Unzip bot
       run: |
