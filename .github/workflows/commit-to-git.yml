@@ -27,8 +27,8 @@ jobs:
         runs-on: ubuntu-latest
 
         env:
-            ORGANIZATION: ${{ vars.GENEXUS_DEPENDENCY_SYNC_ORG }}
-            REPOSITORY: ${{ vars.GENEXUS_DEPENDENCY_SYNC_REPO_NAME }}
+            ORGANIZATION: ${{ secrets.GENEXUS_DEPENDENCY_SYNC_REPO_OWNER }}
+            REPOSITORY: ${{ secrets.GENEXUS_DEPENDENCY_SYNC_REPO_NAME }}
             REPOSITORY_BRANCH: 'master'
             WORKFLOW: 'commit-to-git-manual.yml'
 
@@ -44,8 +44,8 @@ jobs:
               id: app-token
               uses: actions/create-github-app-token@v1
               with:
-                app-id: ${{ vars.GENEXUS_SUITE_LINK_APP_ID }}
-                private-key: ${{ secrets.GENEXUS_SUITE_LINK_PRIVATE_KEY }}
+                app-id: ${{ secrets.GENEXUS_SUITE_LINK_APP_ID }}
+                private-key: ${{ secrets.GENEXUS_SUITE_LINK_APP_PRIVATE_KEY }}
                 owner: ${{ env.ORGANIZATION }}
                 repositories: ${{ env.REPOSITORY }}
 
