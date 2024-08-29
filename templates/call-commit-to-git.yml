@@ -1,0 +1,53 @@
+# -----------------
+# Template that can be used by repositories on github.com/genexuslabs organization
+# -----------------
+# Requirements:
+# * Your repository must have a workflow defined that publishes a new version of
+#   component package(s) to a well-known feed on the organization (aka "build.yml").
+# -----------------
+# Instructions:
+# 1. Edit the build.yml workflow file in your repository.
+# 2. Copy the job "update-genexus-dependency" and add it to the workflow.
+# 3. Configure your build job to generate package information (name and version).
+# 4. Configure update-genexus-dependency job to execute after your build job and
+#    retrieve the package name and version information.
+# -----------------
+name: Call Commit to Git Workflow
+
+ jobs:
+
+   # Your workflow must include a job that generates a new version of the componente (aka 'buildJob')
+   # As an integration sample, the following 'buildJob' is provided.
+   buildJob:
+     name: Build & Publish
+     # To ensure proper handling of values by the callable workflow, you need to define output variables.
+     # In this sample, the values are saved as part of the step 'getBuildInfo'.
+     # Please refer to the workflow itself for more information about the required and optional arguments.
+     outputs:
+       PACKAGE_VERSION: ${{ steps.getBuildInfo.outputs.PACKAGE_VERSION }} # Required
+       PACKAGES_NAME: ${{ steps.getBuildInfo.outputs.PACKAGES_NAME }}     # Optional
+       GIT_COMMIT_MSG: ${{ steps.getBuildInfo.outputs.COMMIT_MSG }}       # Optional
+
+     steps:
+     # As part of your workflow steps, it is necessary to include a process that generates a new package
+     # with a new version and publishes it to a well-known feed. During this process, it is important
+     # to preserve certain values that will be used for integration purposes.
+     - name: Get Build Information
+       id: getBuildInfo
+       run: |
+         # Process to get a new package version that is stored in the variable $newPackageVersion
+         echo "PACKAGE_VERSION=$newPackageVersion" >> $GITHUB_OUTPUT
+         echo "PACKAGES_NAME=package1,package2" >> $GITHUB_OUTPUT
+         echo "COMMIT_MSG=Update to version $newPackageVersion" >> $GITHUB_OUTPUT
+
+# -- Copy & Paste the following job ---
+   update-genexus-dependency:
+     # Replace the 'buildJob' name in the following lines for the name of the job in your workflow that publish the packages(s)
+     uses: genexuslabs/build-genexus-reusable-workflow/.github/workflows/commit-to-git.yml@main
+     needs: buildJob
+     with:
+       VERSION: ${{ needs.buildJob.outputs.PACKAGE_VERSION }}
+       PACKAGE_NAMES: ${{ needs.buildJob.outputs.PACKAGES_NAME }}    # Optional
+       COMMIT_MESSAGE: ${{ needs.buildJob.outputs.GIT_COMMIT_MSG }}  # Optional
+     secrets: inherit
+# -------------------------------------
