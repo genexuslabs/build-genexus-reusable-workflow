@@ -26,5 +26,5 @@ jobs:
   call-workflow:
     # Ensure that only authorized PRs are merged to 'beta' branch.
     if: github.repository_owner == 'genexuslabs'
-    uses: genexuslabs/build-genexus-reusable-workflow/.github/workflows/run-beta-bot.yml@master
+    uses: genexuslabs/build-genexus-reusable-workflow/.github/workflows/run-beta-bot.yml@main
     secrets: inherit
