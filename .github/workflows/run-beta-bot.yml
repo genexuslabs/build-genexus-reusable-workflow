@@ -1,0 +1,91 @@
+name: Beta Bot Call
+
+on:
+  workflow_call:
+
+jobs:
+  show-info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show repository information
+        run: |
+          echo "Repository Owner: ${{ github.repository_owner }}"
+          echo "Repository Name: ${{ github.event.repository.name }}"
+          echo "Actor: ${{ github.actor }}"
+
+  capture-info:
+    runs-on: ubuntu-latest
+    outputs:
+      branch_name: ${{ steps.capture_info.outputs.branch_name }}
+      pr_number: ${{ steps.capture_info.outputs.pr_number }}
+    steps:
+      - name: Capture trigger information
+        id: capture_info
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            echo "Push event detected (action:${{ github.event.action }})"
+            branch_name=$(basename "${{ github.ref }}")
+            echo "Branch: ${branch_name}"
+            echo "branch_name=${branch_name}" >> "$GITHUB_OUTPUT"
+            echo "pr_number=" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" == "pull_request" ]; then
+            addActionInfo=""
+            if [[ "${{ github.event.action }}" == "labeled" || "${{ github.event.action }}" == "unlabeled" ]]; then
+              addActionInfo=", label:${{ github.event.label.name }}"
+            fi
+            echo "Pull request event detected (action:${{ github.event.action }}$addActionInfo)"
+            echo "PR Number: ${{ github.event.number }}"
+            echo "Source Branch: ${{ github.head_ref }}"
+            echo "branch_name=${{ github.head_ref }}" >> "$GITHUB_OUTPUT"
+            echo "pr_number=${{ github.event.number }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "Triggered by a manual dispatch"
+            echo "branch_name=" >> "$GITHUB_OUTPUT"
+            echo "pr_number=" >> "$GITHUB_OUTPUT"
+          fi
+
+  merge:
+    if: (github.event.action != 'labeled' || github.event.label.name != 'conflict') && (github.event.action != 'unlabeled' || github.event.label.name == 'conflict')
+    needs: capture-info
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0'
+
+    - name: Create GitHub App Token
+      id: app-token
+      uses: actions/create-github-app-token@v1
+      with:
+        app-id: ${{ secrets.BETA_BOT_RELEASE_DOWNLOAD_APP_ID }}
+        private-key: ${{ secrets.BETA_BOT_RELEASE_DOWNLOAD_APP_PRIVATE_KEY }}
+        owner: ${{ secrets.BETA_BOT_RELEASE_REPO_OWNER }}
+        repositories: ${{ secrets.BETA_BOT_RELEASE_REPO_NAME }}
+
+    - name: Download Bot
+      env:
+        PAT: ${{ steps.app-token.outputs.token }}
+      run: |
+        curl -H "Authorization: Bearer $PAT" -H "Accept: application/octet-stream" -L -o ./auto-prs-merger.zip ${{ secrets.BETA_BOT_RELEASE_URL }}
+    
+    - name: Unzip bot
+      run: |
+        unzip auto-prs-merger.zip
+
+    - name: Run
+      run: |
+        dotnet ./auto-prs-merger.dll merge bot_merge_tmp ${{ secrets.BETA_BOT_RUN_PAT }} ${{ github.repository_owner }} ${{ github.event.repository.name }} ${{ needs.capture-info.outputs.branch_name }} ${{ needs.capture-info.outputs.pr_number }}
+
+  do-not-merge:
+    if: always()
+    needs: merge
+    name: enable-merging
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for label
+        if: ${{ github.event_name == 'pull_request' && contains( github.event.pull_request.labels.*.name, 'conflict' ) }}
+        run: |
+          echo "Pull request is labeled as 'conflict'"
+          echo "This workflow fails so that the pull request cannot be merged"
+          exit 1

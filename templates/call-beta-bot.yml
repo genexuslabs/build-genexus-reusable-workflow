@@ -1,0 +1,30 @@
+# -----------------
+# Template that can be used by repositories on github.com/genexuslabs organization
+# -----------------
+# Instructions:
+# 1. Create the file (at the given path): .github/workflows/call-beta-bot.yml. 
+# 2. Initialize that file with the content of this file.
+# 3. Configure the default branch if it not 'main'. And remove all unwanted comments.
+# 4. Ask your organization Owner to let your repo use the BETA_BOT_RUN_PAT secret.
+# -----------------
+name: Call Beta Bot
+
+on:
+  # Triggers the workflow on push to beta branch or changes in a pull request to main branch
+  push:
+    branches: [ "beta" ]
+  pull_request:
+    types: [ opened, synchronize, reopened, ready_for_review, closed, labeled, unlabeled ]
+    # If your repo default branch is not main, change following 'main' value to your default branch name
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  # Calls the latest Beta Bot with the current context
+  call-workflow:
+    # Ensure that only authorized PRs are merged to 'beta' branch.
+    if: github.repository_owner == 'genexuslabs'
+    uses: genexuslabs/build-genexus-reusable-workflow/.github/workflows/run-beta-bot.yml@main
+    secrets: inherit
