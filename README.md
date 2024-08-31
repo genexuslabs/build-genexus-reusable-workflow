@@ -9,7 +9,7 @@ This repository contains a collection of reusable workflows used by different Ge
 - [Repository Content](#repository-content)
 - [Workflows](#workflows)
   - [run-beta-bot](#run-beta-bot)
-  - [GeneXus Dependency Sync](#genexus-dependency-sync)
+  - [commit-to-git](#commit-to-git)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -33,7 +33,7 @@ To utilize the workflows in your GeneXus development process, follow these steps
 
 5. Monitor the workflow execution and handle any errors or exceptions that may occur.
 
-## Structure
+## Repository Content
 
 This repository contains the following folders:
 
@@ -49,15 +49,15 @@ The `templates` folder contains several samples that demonstrate how to use the 
 
 ### run-beta-bot
 
-The run-beta-bot workflow is used to handle a reserved branch named 'beta'. This workflow automates the process of merging changes from the 'beta' branch into the main development branch. It ensures that the 'beta' branch remains up-to-date with the latest changes and allows for easy testing of new features before merging them into the main branch.
+The [run-beta-bot](.github/workflows/run-beta-bot.yml) workflow is used to handle a reserved branch named 'beta'. This workflow automates the process of merging changes from the 'beta' branch into the main development branch. It ensures that the 'beta' branch remains up-to-date with the latest changes and allows for easy testing of new features before merging them into the main branch.
 
-To use the run-beta-bot workflow, follow the instructions provided in the workflow file located in the `.github/workflows` folder.
+To use the run-beta-bot workflow, look at the instructions defined in the template workflow [templates/call-beta-bot.yml](templates/call-beta-bot.yml).
 
-### GeneXus Dependency Sync
+### commit-to-git
 
-The GeneXus Dependency Sync workflow is used to update the version of a component in the GeneXus source code repository. This workflow automates the process of synchronizing the component version across multiple projects, ensuring consistency and reducing the chance of errors.
+The [commit-to-git](.github/workflows/commit-to-git.yml) workflow is used to update the version of a component in the GeneXus source code repository. This workflow automates the process of synchronizing the component version across multiple projects, ensuring consistency and reducing the chance of errors.
 
-To use the GeneXus Dependency Sync workflow, follow the instructions provided in the workflow file located in the `.github/workflows` folder.
+To use the commit-to-git workflow, follow the instructions provided in the [templates/call-commit-to-git.yml](templates/call-commit-to-git.yml).
 
 ## Contributing
 
