@@ -9,7 +9,7 @@ This repository contains a collection of reusable workflows used by different Ge
 - [Repository Content](#repository-content)
 - [Workflows](#workflows)
   - [run-beta-bot](#run-beta-bot)
-  - [commit-to-git](#commit-to-git)
+  - [update-genexus-dep-version](#update-genexus-dep-version)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -53,11 +53,11 @@ The [run-beta-bot](.github/workflows/run-beta-bot.yml) workflow is used to handl
 
 To use the run-beta-bot workflow, look at the instructions defined in the template workflow [templates/call-beta-bot.yml](templates/call-beta-bot.yml).
 
-### commit-to-git
+### update-genexus-dep-version
 
-The [commit-to-git](.github/workflows/commit-to-git.yml) workflow is used to update the version of a component in the GeneXus source code repository. This workflow automates the process of synchronizing the component version across multiple projects, ensuring consistency and reducing the chance of errors.
+The [update-genexus-dep-version](.github/workflows/update-genexus-dep-version.yml) workflow is used to update the version of a component in the GeneXus source code repository. This workflow automates the process of synchronizing the component version across multiple projects, ensuring consistency and reducing the chance of errors.
 
-To use the commit-to-git workflow, follow the instructions provided in the [templates/call-commit-to-git.yml](templates/call-commit-to-git.yml).
+To use the update-genexus-dep-version workflow, follow the instructions provided in the [templates/call-update-genexus-dep-version.yml](templates/call-update-genexus-dep-version.yml).
 
 ## Contributing
 
