@@ -12,7 +12,7 @@
 # 4. Configure update-genexus-dependency job to execute after your build job and
 #    retrieve the package name and version information.
 # -----------------
-name: Call Commit to Git Workflow
+name: Call "Update GenXus Dependency Version" Workflow
 
  jobs:
 
@@ -24,9 +24,9 @@ name: Call Commit to Git Workflow
      # In this sample, the values are saved as part of the step 'getBuildInfo'.
      # Please refer to the workflow itself for more information about the required and optional arguments.
      outputs:
-       PACKAGE_VERSION: ${{ steps.getBuildInfo.outputs.PACKAGE_VERSION }} # Required
-       PACKAGES_NAME: ${{ steps.getBuildInfo.outputs.PACKAGES_NAME }}     # Optional
-       GIT_COMMIT_MSG: ${{ steps.getBuildInfo.outputs.COMMIT_MSG }}       # Optional
+       PACKAGE_VERSION: ${{ steps.getBuildInfo.outputs.PACKAGE_VERSION }}
+       PACKAGES_NAME: ${{ steps.getBuildInfo.outputs.PACKAGES_NAME }}
+       GIT_COMMIT_MSG: ${{ steps.getBuildInfo.outputs.COMMIT_MSG }}
 
      steps:
      # As part of your workflow steps, it is necessary to include a process that generates a new package
@@ -43,11 +43,14 @@ name: Call Commit to Git Workflow
 # -- Copy & Paste the following job ---
    update-genexus-dependency:
      # Replace the 'buildJob' name in the following lines for the name of the job in your workflow that publish the packages(s)
-     uses: genexuslabs/build-genexus-reusable-workflow/.github/workflows/commit-to-git.yml@main
+     uses: genexuslabs/build-genexus-reusable-workflow/.github/workflows/update-genexus-dep-version.yml@main
      needs: buildJob
      with:
        VERSION: ${{ needs.buildJob.outputs.PACKAGE_VERSION }}
-       PACKAGE_NAMES: ${{ needs.buildJob.outputs.PACKAGES_NAME }}    # Optional
+       PACKAGE_NAMES: ${{ needs.buildJob.outputs.PACKAGES_NAME }}    # Optional (1)
        COMMIT_MESSAGE: ${{ needs.buildJob.outputs.GIT_COMMIT_MSG }}  # Optional
      secrets: inherit
 # -------------------------------------
+
+# (1) PACKAGE_NAME is optional when your have only one dependency to update and its name
+# is the same than the repo; otherwise, define this value.
