@@ -12,7 +12,7 @@
 # 4. Configure update-genexus-dependency job to execute after your build job and
 #    retrieve the package name and version information.
 # -----------------
-name: Call "Update GenXus Dependency Version" Workflow
+name: Call "Update GeneXus Dependency Version" Workflow
 
  jobs:
 
