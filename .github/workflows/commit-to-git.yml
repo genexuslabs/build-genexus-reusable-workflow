@@ -16,7 +16,7 @@ on:
                 type: string
                 required: false
             PACKAGE_NAMES:
-                #description: 'Comma-separated list of package names to update'
+                #description: 'Comma-separated list of package names to update. _Default value_: repository name.'
                 type: string
                 required: false
 
@@ -37,7 +37,7 @@ jobs:
             VERSION: ${{ inputs.VERSION }}
             COMMITTER: ${{ inputs.COMMITTER || github.actor }}
             COMMIT_MESSAGE: ${{ inputs.COMMIT_MESSAGE }}
-            PACKAGE_NAMES: ${{ inputs.PACKAGE_NAMES }}
+            PACKAGE_NAMES: ${{ inputs.PACKAGE_NAMES || github.repository  }}
 
         steps:
             - name: Create GitHub App Token
