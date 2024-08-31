@@ -52,5 +52,5 @@ name: Call "Update GenXus Dependency Version" Workflow
      secrets: inherit
 # -------------------------------------
 
-# (1) PACKAGE_NAME is optional when your have only one dependency to update and its name
+# (1) PACKAGES_NAME is optional when your have only one dependency to update and its name
 # is the same than the repo; otherwise, define this value.
