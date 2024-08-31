@@ -21,19 +21,19 @@ name: Call Commit to Git Workflow
    buildJob:
      name: Build & Publish
      # To ensure proper handling of values by the callable workflow, you need to define output variables.
-     # In this sample, the values are saved as part of the step 'getBuildInfo'.
+     # In this sample, the values are saved as part of the step 'getDepsInfo'.
      # Please refer to the workflow itself for more information about the required and optional arguments.
      outputs:
-       PACKAGE_VERSION: ${{ steps.getBuildInfo.outputs.PACKAGE_VERSION }} # Required
-       PACKAGES_NAME: ${{ steps.getBuildInfo.outputs.PACKAGES_NAME }}     # Optional
-       GIT_COMMIT_MSG: ${{ steps.getBuildInfo.outputs.COMMIT_MSG }}       # Optional
+       PACKAGE_VERSION: ${{ steps.getDepsInfo.outputs.PACKAGE_VERSION }} # Required
+       PACKAGES_NAME: ${{ steps.getDepsInfo.outputs.PACKAGES_NAME }}     # Optional
+       GIT_COMMIT_MSG: ${{ steps.getDepsInfo.outputs.COMMIT_MSG }}       # Optional
 
      steps:
      # As part of your workflow steps, it is necessary to include a process that generates a new package
      # with a new version and publishes it to a well-known feed. During this process, it is important
      # to preserve certain values that will be used for integration purposes.
      - name: Get Build Information
-       id: getBuildInfo
+       id: getDepsInfo
        run: |
          # Process to get a new package version that is stored in the variable $newPackageVersion
          echo "PACKAGE_VERSION=$newPackageVersion" >> $GITHUB_OUTPUT
