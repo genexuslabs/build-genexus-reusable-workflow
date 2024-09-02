@@ -75,7 +75,7 @@ jobs:
                             BRANCH: '${{ env.BRANCH }}',
                             VERSION: '${{ env.VERSION }}',
                             COMMITTER: '${{ env.COMMITTER }}',
-                            COMMIT_MESSAGE: '${{ env.COMMIT_MESSAGE }}',
+                            COMMIT_MESSAGE: JSON.stringify(${{ env.COMMIT_MESSAGE }}),
                             PACKAGE_NAMES: '${{ env.PACKAGE_NAMES }}',
                         }
                     })
