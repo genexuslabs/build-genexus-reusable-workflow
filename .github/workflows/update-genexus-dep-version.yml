@@ -1,4 +1,4 @@
-name: Update at GeneXus a specified dependency version
+name: Update specified dependency version in GeneXus
 
 on:
     workflow_call:
