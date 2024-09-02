@@ -54,8 +54,11 @@ name: Call Commit to Git Workflow
             }
           }
           $packageNames = $packageIds -join ","
-          echo "PACKAGE_VERSION=$packageVer" >> $GITHUB_OUTPUT
-          echo "PACKAGES_NAME=$packageNames" >> $GITHUB_OUTPUT
+
+          # Look out! GITHUB_OUTPUT is an environment variable. In Powershell, its name is $env:GITHUB_OUTPUT, but for other
+          # languages it is referred to as $GITHUB_OUTPUT.
+          echo "PACKAGE_VERSION=$packageVer" >> $env:GITHUB_OUTPUT
+          echo "PACKAGES_NAME=$packageNames" >> $env:GITHUB_OUTPUT
 
 # -- Copy & Paste the following job ---
   update-genexus-dependency:
