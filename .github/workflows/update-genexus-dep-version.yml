@@ -1,4 +1,4 @@
-name: Commit to GeneXus repository
+name: Update specified dependency version in GeneXus
 
 on:
     workflow_call:
