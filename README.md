@@ -65,7 +65,7 @@ Contributions and forking of this repository are not allowed at the moment. The 
 
 ## License
 
-This repository and its contents are licensed under the [MIT License](LICENSE). Please review the license file for more information.
+This repository and its contents are licensed under the [Apache 2.0 License](LICENSE). Please review the license file for more information.
 
 ---
 
