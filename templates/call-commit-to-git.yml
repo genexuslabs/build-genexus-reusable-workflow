@@ -14,40 +14,59 @@
 # -----------------
 name: Call Commit to Git Workflow
 
- jobs:
+  jobs:
 
-   # Your workflow must include a job that generates a new version of the componente (aka 'buildJob')
-   # As an integration sample, the following 'buildJob' is provided.
-   buildJob:
-     name: Build & Publish
-     # To ensure proper handling of values by the callable workflow, you need to define output variables.
-     # In this sample, the values are saved as part of the step 'getBuildInfo'.
-     # Please refer to the workflow itself for more information about the required and optional arguments.
-     outputs:
-       PACKAGE_VERSION: ${{ steps.getBuildInfo.outputs.PACKAGE_VERSION }} # Required
-       PACKAGES_NAME: ${{ steps.getBuildInfo.outputs.PACKAGES_NAME }}     # Optional
-       GIT_COMMIT_MSG: ${{ steps.getBuildInfo.outputs.COMMIT_MSG }}       # Optional
+    # Your workflow must include a job that generates a new version of the componente (aka 'buildJob')
+    # As an integration sample, the following 'buildJob' is provided.
+    buildJob:
+      name: Build & Publish
+      # To ensure proper handling of values by the callable workflow, you need to define output variables.
+      # In this sample, the values are saved as part of the step 'getDepsInfo'.
+      # Please refer to the workflow itself for more information about the required and optional arguments.
+      outputs:
+        PACKAGE_VERSION: ${{ steps.getDepsInfo.outputs.PACKAGE_VERSION }}
+        PACKAGES_NAME: ${{ steps.getDepsInfo.outputs.PACKAGES_NAME }}
 
-     steps:
-     # As part of your workflow steps, it is necessary to include a process that generates a new package
-     # with a new version and publishes it to a well-known feed. During this process, it is important
-     # to preserve certain values that will be used for integration purposes.
-     - name: Get Build Information
-       id: getBuildInfo
-       run: |
-         # Process to get a new package version that is stored in the variable $newPackageVersion
-         echo "PACKAGE_VERSION=$newPackageVersion" >> $GITHUB_OUTPUT
-         echo "PACKAGES_NAME=package1,package2" >> $GITHUB_OUTPUT
-         echo "COMMIT_MSG=Update to version $newPackageVersion" >> $GITHUB_OUTPUT
+      steps:
+      # As part of your workflow steps, it is necessary to include a process that generates a new package
+      # with a new version and publishes it to a well-known feed. During this process, it is important
+      # to preserve certain values that will be used for integration purposes.
+      - name: Get Packages Information
+        id: getDepsInfo
+        run: |        
+          # Following sample reads the packages Id and Ver from the
+          # nupkg in a given directory
+          $nupkgDir = "Packages\Release"
+          $pattern = '^(.*?)\.(\d+\.\d+(\.\d+)?([+-].*)?)\.nupkg$'
+          $packageIds= @()
+          $packageVer=""
+          Get-ChildItem "$env:nupkgDir\*.nupkg" -Recurse | ForEach-Object {
+            if ($_.Name -match $pattern) {
+              $packageId = $matches[1]
+              if ($packageId-notin $packageIds) {
+                $packageIds += $packageId
+              }
+              # In this sample, all packages are expected to share the same package version
+              $packageVer = $matches[2]
+            }
+            else {
+              Write-Error "Unexpected name. File name does not matches NuGet pattern for packageId and packgeVersion: $_.Name"
+            }
+          }
+          $packageNames = $packageIds -join ","
+
+          # Look out! GITHUB_OUTPUT is an environment variable. In Powershell, its name is $env:GITHUB_OUTPUT, but for other
+          # languages it is referred to as $GITHUB_OUTPUT.
+          echo "PACKAGE_VERSION=$packageVer" >> $env:GITHUB_OUTPUT
+          echo "PACKAGES_NAME=$packageNames" >> $env:GITHUB_OUTPUT
 
 # -- Copy & Paste the following job ---
-   update-genexus-dependency:
-     # Replace the 'buildJob' name in the following lines for the name of the job in your workflow that publish the packages(s)
-     uses: genexuslabs/build-genexus-reusable-workflow/.github/workflows/commit-to-git.yml@main
-     needs: buildJob
-     with:
-       VERSION: ${{ needs.buildJob.outputs.PACKAGE_VERSION }}
-       PACKAGE_NAMES: ${{ needs.buildJob.outputs.PACKAGES_NAME }}    # Optional
-       COMMIT_MESSAGE: ${{ needs.buildJob.outputs.GIT_COMMIT_MSG }}  # Optional
-     secrets: inherit
+  update-genexus-dependency:
+    # Replace the 'buildJob' name in the following lines for the name of the job in your workflow that publish the packages(s)
+    uses: genexuslabs/build-genexus-reusable-workflow/.github/workflows/commit-to-git.yml@main
+    needs: buildJob
+    with:
+      VERSION: ${{ needs.buildJob.outputs.PACKAGE_VERSION }}
+      PACKAGE_NAMES: ${{ needs.buildJob.outputs.PACKAGES_NAME }}    # Optional
+    secrets: inherit
 # -------------------------------------
