@@ -36,7 +36,7 @@ jobs:
             BRANCH: ${{ github.ref_name }}
             VERSION: ${{ inputs.VERSION }}
             COMMITTER: ${{ inputs.COMMITTER || github.actor }}
-            COMMIT_MESSAGE: ${{ inputs.COMMIT_MESSAGE }}
+            COMMIT_MESSAGE: ${{ inputs.COMMIT_MESSAGE || '' }}
             PACKAGE_NAMES: ${{ inputs.PACKAGE_NAMES || github.repository  }}
 
         steps:
