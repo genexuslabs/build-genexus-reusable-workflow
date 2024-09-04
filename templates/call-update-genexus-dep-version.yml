@@ -11,6 +11,8 @@
 # 3. Configure your build job to generate package information (name and version).
 # 4. Configure update-genexus-dependency job to execute after your build job and
 #    retrieve the package name and version information.
+# 5. Ask your organization Owner to let your repo use the following secrets:
+#    - GENEXUS_SUITE_LINK_APP_PRIVATE_KEY
 # -----------------
 name: Call "Update GeneXus Dependency Version" Workflow
 

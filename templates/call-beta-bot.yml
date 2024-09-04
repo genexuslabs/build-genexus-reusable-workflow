@@ -5,7 +5,9 @@
 # 1. Create the file (at the given path): .github/workflows/call-beta-bot.yml. 
 # 2. Initialize that file with the content of this file.
 # 3. Configure the default branch if it not 'main'. And remove all unwanted comments.
-# 4. Ask your organization Owner to let your repo use the BETA_BOT_RUN_PAT secret.
+# 4. Ask your organization Owner to let your repo use the following secrets:
+#    - BETA_BOT_RELEASE_DOWNLOAD_APP_PRIVATE_KEY
+#    - BETA_BOT_RUN_PAT
 # -----------------
 name: Call Beta Bot
 
