@@ -63,7 +63,7 @@ jobs:
 
             - name: Normalize Commit Message
               run: |
-                # Remove ' character from message
+                # Change ' character in the message content for "
                 normalizedMessage=$(echo "${{ env.COMMIT_MESSAGE }}" | sed "s/'/\"/g")
                 echo "COMMIT_MESSAGE=$normalizedMessage" >> $GITHUB_ENV
 
