@@ -64,7 +64,7 @@ jobs:
             - name: Normalize Commit Message
               run: |
                 # Remove ' character from message
-                normalizedMessage=$(echo "${{ env.COMMIT_MESSAGE }}" | sed "s/'//g")
+                normalizedMessage=$(echo "${{ env.COMMIT_MESSAGE }}" | sed "s/'/\"/g")
                 echo "COMMIT_MESSAGE=$normalizedMessage" >> $GITHUB_ENV
 
             - name: Trigger the workflow_dispatch event
