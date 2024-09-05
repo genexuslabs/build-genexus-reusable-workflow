@@ -55,10 +55,17 @@ jobs:
                 ref: ${{ github.ref }}
                 fetch-depth: 1
                 token: ${{ github.token}} # Must not use steps.app-token.outputs.token here because it is not allowed to access the current repository
-  
+
+            # Get a non empty value for the commit message 
             - name: Get last commit message
               if: env.COMMIT_MESSAGE == ''
               run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+
+            - name: Normalize Commit Message
+              run: |
+                # Change ' character in the message content for "
+                normalizedMessage=$(echo "${{ env.COMMIT_MESSAGE }}" | sed "s/'/\"/g")
+                echo "COMMIT_MESSAGE=$normalizedMessage" >> $GITHUB_ENV
 
             - name: Trigger the workflow_dispatch event
               uses: actions/github-script@v7
