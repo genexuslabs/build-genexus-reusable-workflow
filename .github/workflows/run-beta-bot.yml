@@ -75,6 +75,8 @@ jobs:
 
     - name: Run
       run: |
+        botVersion="$(monodis --assembly ./auto-prs-merger.dll | grep Version)"
+        echo "[INFO] Bot $botVersion"
         dotnet ./auto-prs-merger.dll merge bot_merge_tmp ${{ secrets.BETA_BOT_RUN_PAT }} ${{ github.repository_owner }} ${{ github.event.repository.name }} ${{ needs.capture-info.outputs.branch_name }} ${{ needs.capture-info.outputs.pr_number }}
 
   do-not-merge:
