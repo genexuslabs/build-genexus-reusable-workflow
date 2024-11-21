@@ -29,15 +29,8 @@ jobs:
         env:
             ORGANIZATION: ${{ secrets.GENEXUS_DEPENDENCY_SYNC_REPO_OWNER }}
             REPOSITORY: ${{ secrets.GENEXUS_DEPENDENCY_SYNC_REPO_NAME }}
-            REPOSITORY_BRANCH: 'v1'
+            REPOSITORY_BRANCH: 'v2'
             WORKFLOW: 'commit-to-git-manual.yml'
-
-            COMPONENT: ${{ github.repository }}
-            BRANCH: ${{ github.ref_name }}
-            VERSION: ${{ inputs.VERSION }}
-            COMMITTER: ${{ inputs.COMMITTER || github.actor }}
-            COMMIT_MESSAGE: ${{ inputs.COMMIT_MESSAGE || '' }}
-            PACKAGE_NAMES: ${{ inputs.PACKAGE_NAMES || github.repository  }}
 
         steps:
             - name: Create GitHub App Token
@@ -48,18 +41,6 @@ jobs:
                 private-key: ${{ secrets.GENEXUS_SUITE_LINK_APP_PRIVATE_KEY }}
                 owner: ${{ env.ORGANIZATION }}
                 repositories: ${{ env.REPOSITORY }}
-
-            - uses: actions/checkout@v4
-              name: Checkout current repository
-              with:
-                ref: ${{ github.ref }}
-                fetch-depth: 1
-                token: ${{ github.token}} # Must not use steps.app-token.outputs.token here because it is not allowed to access the current repository
-
-            # Get a non empty value for the commit message 
-            - name: Get last commit message
-              if: env.COMMIT_MESSAGE == ''
-              run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
 
             - name: Normalize Commit Message
               run: |
@@ -78,11 +59,11 @@ jobs:
                         workflow_id: '${{ env.WORKFLOW }}',
                         ref: '${{ env.REPOSITORY_BRANCH }}',
                         inputs: {
-                            COMPONENT_NAME: '${{ env.COMPONENT }}',
-                            BRANCH: '${{ env.BRANCH }}',
-                            VERSION: '${{ env.VERSION }}',
-                            COMMITTER: '${{ env.COMMITTER }}',
-                            COMMIT_MESSAGE: '${{ env.COMMIT_MESSAGE }}',
-                            PACKAGE_NAMES: '${{ env.PACKAGE_NAMES }}',
+                            COMPONENT_NAME: '${{ github.repository }}',
+                            BRANCH: '${{ github.ref_name }}',
+                            VERSION: '${{ inputs.VERSION }}',
+                            COMMITTER: '${{ inputs.COMMITTER || github.actor }}',
+                            COMMIT_MESSAGE: '${{ inputs.COMMIT_MESSAGE }}',
+                            PACKAGE_NAMES: '${{ inputs.PACKAGE_NAMES }}',
                         }
                     })
