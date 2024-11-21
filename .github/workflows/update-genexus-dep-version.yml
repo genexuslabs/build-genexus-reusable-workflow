@@ -29,7 +29,7 @@ jobs:
         env:
             ORGANIZATION: ${{ secrets.GENEXUS_DEPENDENCY_SYNC_REPO_OWNER }}
             REPOSITORY: ${{ secrets.GENEXUS_DEPENDENCY_SYNC_REPO_NAME }}
-            REPOSITORY_BRANCH: 'master'
+            REPOSITORY_BRANCH: 'v1'
             WORKFLOW: 'commit-to-git-manual.yml'
 
             COMPONENT: ${{ github.repository }}
