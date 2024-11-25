@@ -42,12 +42,6 @@ jobs:
                 owner: ${{ env.ORGANIZATION }}
                 repositories: ${{ env.REPOSITORY }}
 
-            - name: Normalize Commit Message
-              run: |
-                # Change ' character in the message content for "
-                normalizedMessage=$(echo "${{ env.COMMIT_MESSAGE }}" | sed "s/'/\"/g")
-                echo "COMMIT_MESSAGE=$normalizedMessage" >> $GITHUB_ENV
-
             - name: Trigger the workflow_dispatch event
               uses: actions/github-script@v7
               with:
