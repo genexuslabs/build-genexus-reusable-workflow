@@ -47,7 +47,7 @@ jobs:
   merge:
     if: (github.event.action != 'labeled' || github.event.label.name != 'conflict') && (github.event.action != 'unlabeled' || github.event.label.name == 'conflict')
     needs: capture-info
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
