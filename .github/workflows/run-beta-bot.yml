@@ -47,7 +47,7 @@ jobs:
   merge:
     if: (github.event.action != 'labeled' || github.event.label.name != 'conflict') && (github.event.action != 'unlabeled' || github.event.label.name == 'conflict')
     needs: capture-info
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -69,14 +69,14 @@ jobs:
       run: |
         curl -H "Authorization: Bearer $PAT" -H "Accept: application/octet-stream" -L -o ./auto-prs-merger.zip ${{ secrets.BETA_BOT_RELEASE_URL }}
     
-    - name: Unzip bot
+    - name: Install Bot
       run: |
         unzip auto-prs-merger.zip
+        botVersion="$(dotnet ./auto-prs-merger.dll --version | grep -Eo '[0-9.]+')"
+        echo "[INFO] Beta bot version=$botVersion"
 
     - name: Run
       run: |
-        botVersion="$(monodis --assembly ./auto-prs-merger.dll | grep Version)"
-        echo "[INFO] Bot $botVersion"
         dotnet ./auto-prs-merger.dll merge bot_merge_tmp ${{ secrets.BETA_BOT_RUN_PAT }} ${{ github.repository_owner }} ${{ github.event.repository.name }} ${{ needs.capture-info.outputs.branch_name }} ${{ needs.capture-info.outputs.pr_number }}
 
   do-not-merge:
